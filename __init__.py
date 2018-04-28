@@ -7,7 +7,7 @@ from oauth2client.client import FlowExchangeError
 from oauth2client.client import flow_from_clientsecrets
 from sqlalchemy import create_engine, asc
 from sqlalchemy.orm import sessionmaker
-from database_setup import Base, Restaurant, MenuItem, User
+from .database_setup import Base, Restaurant, MenuItem, User
 from flask import session as login_session
 from flask import make_response
 from flask import Flask, render_template, request
@@ -15,7 +15,7 @@ from flask import redirect, jsonify, url_for, flash
 
 app = Flask(__name__)
 CLIENT_ID = json.loads(
-    open('client_secrets.json', 'r').read())['web']['client_id']
+    open('/var/www/finalproject/finalprojectclient_secrets.json', 'r').read())['web']['client_id']
 APPLICATION_NAME = "Restaurant Menu Application"
 # Connect to Database and create database session
 # engine = create_engine('sqlite:///restaurantmenu.db')
@@ -128,7 +128,7 @@ def gconnect():
               '"-webkit-border-radius: 150px;-moz-border-radius: 150px;"> '
     flash("you are now logged in as %s" % login_session['username'])
 
-#   print "done!"
+  print ("done!")
     return output
 
 # To disconnect  the users and log them out
@@ -138,20 +138,20 @@ def gconnect():
 def gdisconnect():
     access_token = login_session.get('access_token')
     if access_token is None:
-        print 'Access Token is None'
+        print ('Access Token is None')
         response = make_response(json.dumps('Current user not connected.'),
                                  401)
         response.headers['Content-Type'] = 'application/json'
         return response
-    print 'In gdisconnect access token is %s', access_token
-    print 'User name is: '
-    print login_session['username']
+    print ('In gdisconnect access token is %s', access_token)
+    print ('User name is: ')
+    print (login_session['username'])
     url = 'https://accounts.google.com/o/' \
     'oauth2/revoke?token=%s' % login_session['access_token']
     h = httplib2.Http()
     result = h.request(url, 'GET')[0]
-    print 'result is '
-    print result
+    print ('result is ')
+    print (result)
     if result['status'] == '200':
         del login_session['access_token']
         del login_session['gplus_id']
@@ -389,6 +389,6 @@ def deleteMenuItem(restaurant_id, menu_id):
 
 
 if __name__ == '__main__':
-    app.secret_key = 'super_secret_key'
+    app.secret_key = 'grader'
     app.debug = True
     app.run(host='0.0.0.0', port=5000)
